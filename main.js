@@ -80,6 +80,23 @@ let stage5Platforms = [
   { x: 600, y: 100, w: 100, h: 5, teleport: true },
 ];
 
+let stage6Platforms = [
+  { x: 200, y: 550, w: 100, h: 5 },
+  { x: 300, y: 450, w: 50, h: 5 },
+  { x: 350, y: 450, w: 100, h: 5, lava: true },
+  { x: 450, y: 450, w: 100, h: 5 },
+  { x: 600, y: 375, w: 100, h: 5 },
+  { x: 600, y: 285, w: 5, h: 40, lava: true },
+  { x: 450, y: 275, w: 100, h: 5 },
+  { x: 100, y: 250, w: 50, h: 5 },
+  { x: 150, y: 250, w: 100, h: 5, lava: true },
+  { x: 150, y: 150, w: 100, h: 5, lava: true },
+  { x: 250, y: 250, w: 100, h: 5 },
+  { x: 50, y: 150, w: 50, h: 5 },
+  { x: 325, y: 120, w: 50, h: 5 },
+  { x: 600, y: 100, w: 100, h: 5, teleport: true },
+];
+
 let currentStage = 1;
 
 // Program Loop
@@ -188,7 +205,7 @@ function draw() {
       // Check if player touched a teleport platform
       if (platform.teleport) {
         currentStage++;
-        if (currentStage > 5) {
+        if (currentStage > 6) {
           stop;
         } else {
           // Continue to the next stage
