@@ -4,8 +4,9 @@ let ctx = cnv.getContext("2d");
 cnv.width = 800;
 cnv.height = 600;
 let checkpoints = [];
-
 let isGameStarted = false;
+let timer = 0;
+let deathCounter = 0;
 
 // Start button click event listener
 let startButton = document.getElementById("startButton");
@@ -15,6 +16,8 @@ startButton.addEventListener("click", startGame);
 function startGame() {
   if (!isGameStarted) {
     isGameStarted = true;
+    deathCounter = 0;
+    timer = 0;
     requestAnimationFrame(draw);
   }
 }
@@ -71,7 +74,7 @@ let stage4Platforms = [
 ];
 
 let stage5Platforms = [
-  { x: 200, y: 550, w: 100, h: 5, checkpoint: true },
+  { x: 200, y: 550, w: 100, h: 5, checkpoint: true, stage: 5 },
   { x: 500, y: 450, w: 50, h: 5 },
   { x: 400, y: 350, w: 100, h: 5 },
   { x: 300, y: 350, w: 100, h: 5, lava: true },
@@ -81,7 +84,7 @@ let stage5Platforms = [
 ];
 
 let stage6Platforms = [
-  { x: 200, y: 550, w: 100, h: 5 },
+  { x: 200, y: 550, w: 100, h: 5, checkpoint: true, stage: 6 },
   { x: 300, y: 450, w: 50, h: 5 },
   { x: 350, y: 450, w: 100, h: 5, lava: true },
   { x: 450, y: 450, w: 100, h: 5 },
@@ -90,10 +93,88 @@ let stage6Platforms = [
   { x: 450, y: 275, w: 100, h: 5 },
   { x: 100, y: 250, w: 50, h: 5 },
   { x: 150, y: 250, w: 100, h: 5, lava: true },
-  { x: 150, y: 150, w: 100, h: 5, lava: true },
   { x: 250, y: 250, w: 100, h: 5 },
   { x: 50, y: 150, w: 50, h: 5 },
   { x: 325, y: 120, w: 50, h: 5 },
+  { x: 600, y: 100, w: 100, h: 5, teleport: true },
+];
+
+let stage7Platforms = [
+  { x: 700, y: 550, w: 100, h: 5, checkpoint: true, stage: 7 },
+  { x: 600, y: 450, w: 50, h: 5 },
+  { x: 400, y: 400, w: 30, h: 5, lava: true },
+  { x: 470, y: 400, w: 30, h: 5, lava: true },
+  { x: 430, y: 400, w: 40, h: 5 },
+  { x: 250, y: 400, w: 100, h: 5 },
+  { x: 350, y: 400, w: 5, h: -70, lava: true },
+  { x: 100, y: 450, w: 100, h: 5 },
+  { x: 0, y: 400, w: 50, h: 5 },
+  { x: 100, y: 300, w: 50, h: 5 },
+  { x: 150, y: 300, w: 5, h: -70, lava: true },
+  { x: 0, y: 250, w: 50, h: 5 },
+  { x: 200, y: 200, w: 50, h: 5 },
+  { x: 100, y: 200, w: 50, h: 5, lava: true },
+  { x: 300, y: 250, w: 50, h: 5 },
+  { x: 400, y: 200, w: 25, h: 5 },
+  { x: 450, y: 150, w: 100, h: 5, lava: true },
+  { x: 475, y: 120, w: 25, h: 5 },
+  { x: 600, y: 100, w: 100, h: 5, teleport: true },
+];
+
+let stage8Platforms = [
+  { x: 50, y: 550, w: 100, h: 5, checkpoint: true, stage: 8 },
+  { x: 100, y: 450, w: 50, h: 5 },
+  { x: 150, y: 400, w: 100, h: 5, lava: true },
+  { x: 250, y: 400, w: 50, h: 5 },
+  { x: 300, y: 421, w: 50, h: 5 },
+  { x: 350, y: 500, w: 100, h: 5, lava: true },
+  { x: 350, y: 360, w: 100, h: 5, lava: true },
+  { x: 450, y: 450, w: 100, h: 5 },
+  { x: 600, y: 400, w: 50, h: 5 },
+  { x: 700, y: 350, w: 50, h: 5 },
+  { x: 600, y: 250, w: 50, h: 5 },
+  { x: 350, y: 300, w: 100, h: 5 },
+  { x: 450, y: 255, w: 5, h: 50, lava: true },
+  { x: 350, y: 255, w: 5, h: 50, lava: true },
+  { x: 350, y: 250, w: 100, h: 5 },
+  { x: 150, y: 225, w: 100, h: 5 },
+  { x: 250, y: 150, w: 30, h: 5 },
+  { x: 310, y: 150, w: 30, h: 5 },
+  { x: 370, y: 150, w: 70, h: 5 },
+  { x: 460, y: 150, w: 30, h: 5 },
+  { x: 520, y: 150, w: 250, h: 5 },
+  { x: 350, y: 100, w: 5, h: 50, lava: true },
+  { x: 300, y: 100, w: 5, h: 50, lava: true },
+  { x: 400, y: 0, w: 5, h: 100, lava: true },
+  { x: 450, y: 100, w: 5, h: 50, lava: true },
+  { x: 500, y: 100, w: 5, h: 50, lava: true },
+  { x: 550, y: 0, w: 5, h: 100, lava: true },
+  { x: 600, y: 100, w: 100, h: 5, teleport: true },
+];
+
+let stage9Platforms = [
+  { x: 50, y: 550, w: 100, h: 5, checkpoint: true, stage: 9 },
+  { x: 300, y: 450, w: 50, h: 5 },
+  { x: 150, y: 425, w: 100, h: 5, lava: true },
+  { x: 50, y: 400, w: 50, h: 5, spring: true },
+  { x: 500, y: 250, w: 50, h: 5, spring: true },
+  { x: 150, y: 300, w: 100, h: 5, lava: true },
+  { x: 350, y: 200, w: 100, h: 5, lava: true },
+  { x: 600, y: 100, w: 100, h: 5, teleport: true },
+];
+
+let stage10Platforms = [
+  { x: 0, y: 595, w: 100, h: 5, checkpoint: true, stage: 10 },
+  { x: 101, y: 595, w: 700, h: 5, lava: true },
+  { x: 300, y: 550, w: 50, h: 5 },
+  { x: 450, y: 525, w: 100, h: 5, lava: true },
+  { x: 600, y: 500, w: 50, h: 5, spring: true },
+  { x: 300, y: 425, w: 50, h: 5 },
+  { x: 0, y: 400, w: 100, h: 5 },
+  { x: 125, y: 350, w: 100, h: 5, lava: true },
+  { x: 0, y: 300, w: 50, h: 5 },
+  { x: 200, y: 200, w: 50, h: 5, spring: true },
+  { x: 400, y: 100, w: 100, h: 5, lava: true },
   { x: 600, y: 100, w: 100, h: 5, teleport: true },
 ];
 
@@ -109,12 +190,23 @@ function draw() {
 function draw() {
   // Logic
 
+  timer++;
+
   // Apply gravity
   player.ySpeed += player.gravity;
 
   // Move player xSpeed and ySpeed
   player.x += player.xSpeed;
   player.y += player.ySpeed;
+
+  // Clear canvas
+  ctx.clearRect(0, 0, cnv.width, cnv.height);
+
+  // Render timer and death counter
+  ctx.font = "40px Consolas";
+  ctx.fillStyle = "lightblue";
+  ctx.fillText("Time: " + timer, 100, 200);
+  ctx.fillText("Deaths: " + deathCounter, 100, 400);
 
   // Check boundaries
   if (player.x < 0) {
@@ -159,6 +251,24 @@ function draw() {
   } else if (currentStage === 10) {
     currentPlatforms = stage10Platforms;
   }
+
+  // Check if the player has reached the endgame condition
+  if (currentStage === 10 && player.y + player.h < 0) {
+    // Game ended, player beat level 10
+    isGameStarted = false;
+    ctx.font = "60px Consolas";
+    ctx.fillStyle = "green";
+    ctx.fillText("Congratulations!", 200, 300);
+    ctx.fillText("You beat level 10!", 150, 400);
+    ctx.fillText("Deaths: " + deathCounter, 250, 500);
+    ctx.fillText("Time: " + timer + " Seconds", 300, 600);
+    return;
+  }
+
+  // Render player
+  ctx.fillStyle = "red";
+  ctx.fillRect(player.x, player.y, player.w, player.h);
+
   for (let i = 0; i < currentPlatforms.length; i++) {
     let platform = currentPlatforms[i];
     if (
@@ -205,7 +315,7 @@ function draw() {
       // Check if player touched a teleport platform
       if (platform.teleport) {
         currentStage++;
-        if (currentStage > 6) {
+        if (currentStage > 10) {
           stop;
         } else {
           // Continue to the next stage
@@ -214,8 +324,13 @@ function draw() {
         }
       } else if (platform.checkpoint) {
         // Set the checkpoint position
-        checkpoints.push({ x: platform.x, y: platform.y });
+        checkpoints.push({
+          x: platform.x,
+          y: platform.y,
+          stage: platform.stage,
+        });
       } else if (platform.lava) {
+        deathCounter++;
         // Player touches lava, reset to checkpoint or start
         if (checkpoints.length > 0) {
           // Check if any checkpoints are set
@@ -223,12 +338,15 @@ function draw() {
           let lastCheckpoint = checkpoints[checkpoints.length - 1];
           player.x = lastCheckpoint.x + 35;
           player.y = lastCheckpoint.y - 50;
+          currentStage = lastCheckpoint.stage;
         } else {
           // Reset to the beginning of stage 1 if no checkpoints are set
           currentStage = 1;
           player.x = 375;
           player.y = 550;
         }
+      } else if (platform.spring) {
+        player.ySpeed = -10;
       }
 
       break;
@@ -243,7 +361,7 @@ function draw() {
   // Drawing
   ctx.clearRect(0, 0, cnv.width, cnv.height);
 
-  // Draw Player
+  // Draw player
   ctx.fillStyle = "orange";
   ctx.fillRect(player.x, player.y, player.w, player.h);
 
@@ -257,11 +375,18 @@ function draw() {
       ctx.fillStyle = "yellow";
     } else if (platform.lava) {
       ctx.fillStyle = "red";
+    } else if (platform.spring) {
+      ctx.fillStyle = "green";
     } else {
       ctx.fillStyle = "lightblue";
     }
 
     ctx.fillRect(platform.x, platform.y, platform.w, platform.h);
+
+    ctx.font = "20px Consolas";
+    ctx.fillStyle = "lightblue";
+    ctx.fillText("Time: " + (timer / 60).toFixed(3) + " Seconds", 150, 20);
+    ctx.fillText("Deaths: " + deathCounter, 550, 20);
   }
 
   // request another frame
